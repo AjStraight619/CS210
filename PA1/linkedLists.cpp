@@ -254,6 +254,10 @@ public:
 
   void deleteAtIndex(int index)
   {
+
+    if (isEmpty())
+      return;
+
     if (index < 0 || index >= length)
     {
       return;
@@ -293,6 +297,62 @@ public:
     current->next->prev = current->prev;
     delete current;
     length--;
+  }
+
+  void removeMultiples()
+  {
+    if (isEmpty())
+      return;
+    // initializing a map
+    std::unordered_map<T *, int> countMap;
+
+    Node<T> *current = head;
+    while (current != nullptr)
+    {
+      countMap[current->value]++;
+      current = current->next;
+    }
+
+    current = head;
+    while (current != nullptr)
+    {
+      Node<T> *nextNode = current->next;
+
+      if (countMap[current->value] > 1)
+      {
+      }
+
+      current = nextNode;
+    }
+  }
+
+  int countMultiples(T value)
+  {
+
+    if (isEmpty())
+      return 0;
+
+    Node<T> *current = head;
+
+    int count = 0;
+
+    while (current != nullptr)
+    {
+      // dereference current node value.
+      if (*(current->value) == value)
+      {
+        count++;
+      }
+      current = current->next;
+    }
+
+    return count;
+  }
+
+  // Helper function to limit non DRY implementation
+  bool isEmpty()
+  {
+    return (head == nullptr);
   }
 };
 
