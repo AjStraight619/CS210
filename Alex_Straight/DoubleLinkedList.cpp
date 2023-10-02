@@ -1,5 +1,11 @@
+/*
+Alex Straight
+CS 210
+Programming assignment 1
+10/01/2023
+*/
+
 #include <iostream>
-#include <unordered_map>
 
 using namespace std;
 
@@ -56,6 +62,13 @@ public:
     head = newNode;
     tail = newNode;
     length = 1;
+  }
+
+  DoubleLinkedList()
+  {
+    head = nullptr;
+    tail = nullptr;
+    length = 0;
   }
 
   // Destructor
@@ -204,12 +217,15 @@ public:
   // All delete Methods
   // Write DeleteHead, DeleteTail & DeleteAtIndex here
 
+  // Delete at head of DLL
+
   void deleteAtHead()
   {
     cout << head << endl;
+
     if (head == nullptr)
     {
-      return; // list is empty, nothing to delete
+      return;
     }
     if (head == tail)
     {
@@ -227,8 +243,14 @@ public:
     length--;
   }
 
+  // Delete at tail of DLL
+
   void deleteAtTail()
   {
+
+    cout << tail << endl;
+
+    Node<T> *temp;
 
     if (tail == nullptr)
     {
@@ -253,9 +275,10 @@ public:
     length--;
   }
 
+  // Delete at specific index.
+
   void deleteAtIndex(int index)
   {
-
     if (isEmpty())
       return;
 
@@ -277,7 +300,6 @@ public:
     Node<T> *current;
     if (index <= length / 2)
     {
-      // If the index is in the first half, start traversal from head
       current = head;
       for (int i = 0; i < index; i++)
       {
@@ -286,7 +308,6 @@ public:
     }
     else
     {
-      // If the index is in the second half, start traversal from tail
       current = tail;
       for (int i = length - 1; i > index; i--)
       {
@@ -294,57 +315,47 @@ public:
       }
     }
 
+    cout << current << endl;
+
     current->prev->next = current->next;
     current->next->prev = current->prev;
     delete current;
     length--;
   }
 
-#include <unordered_map>
+  // Remove multiples. We utilize the count mutliples function here.
 
   void removeMultiples()
   {
     if (isEmpty())
       return;
 
-    std::unordered_map<T, int> countMap;
-
     Node<T> *current = head;
     while (current != nullptr)
     {
-      countMap[*(current->value)]++;
-      current = current->next;
-    }
-
-    current = head;
-    Node<T> *prev = nullptr;
-    while (current != nullptr)
-    {
-      if (countMap[*(current->value)] > 1)
+      int count = countMultiples(*(current->value));
+      if (count > 1)
       {
-        if (prev == nullptr)
-        {
-          head = current->next;
-        }
-        else
-        {
-          prev->next = current->next;
-        }
+        Node<T> *toDelete = current;
+        if (current->prev != nullptr)
+          current->prev->next = current->next;
         if (current->next != nullptr)
-        {
-          current->next->prev = prev;
-        }
-        Node<T> *temp = current;
+          current->next->prev = current->prev;
+        if (current == head)
+          head = current->next;
+        if (current == tail)
+          tail = current->prev;
         current = current->next;
-        delete temp;
+        delete toDelete;
       }
       else
       {
-        prev = current;
         current = current->next;
       }
     }
   }
+
+  // Count multiples
 
   int countMultiples(T value)
   {
@@ -352,21 +363,18 @@ public:
       return 0;
 
     Node<T> *current = head;
-
     int count = 0;
 
     while (current != nullptr)
     {
-      if (*(current->value) == value)
+      if (current->value->value == value.value)
       {
         count++;
       }
       current = current->next;
     }
-
     return count;
   }
-
   void headTailSplit()
   {
     if (isEmpty())
@@ -399,11 +407,13 @@ public:
       delete temp;
     }
 
-    delete this; // Deleting the original list
+    delete this;
 
-    listA.printList(); // Printing the list A
-    listB.printList(); // Printing the list B
+    listA.printList();
+    listB.printList();
   }
+
+  // Sort the list. I tried using a hash map but I kept getting weird bugs so I used essentially bubble sort instead. O(n^2)
 
   void sortList()
   {
@@ -432,8 +442,10 @@ public:
 
     } while (swapped);
 
-    printList(); // Printing the sorted list.
+    printList();
   }
+
+  // Reverse the list
 
   void reverseList()
   {
@@ -450,7 +462,7 @@ public:
     if (temp != nullptr)
       head = temp->prev;
 
-    printList(); // Printing the reversed list
+    printList();
   }
 
   // Helper function
@@ -467,7 +479,7 @@ int main()
   int choice, value;
   string name;
   DoubleLinkedList<Data> *list = nullptr;
-
+  // do while loop to inform user of possible interactions
   do
   {
     cout << "Menu:\n";
@@ -487,6 +499,8 @@ int main()
     cout << "0. Exit\n";
     cout << "Enter your choice: ";
     cin >> choice;
+
+    // Switching on choice case 1-13 are operations. 0 to exit.
 
     switch (choice)
     {
