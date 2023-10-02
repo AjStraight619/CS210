@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unordered_map>
 
 using namespace std;
 
@@ -244,8 +245,8 @@ public:
     else
     {
       temp = tail;
-      tail = tail->prev
-                 tail->next = nullptr;
+      tail = tail->prev;
+      tail->next = nullptr;
       delete temp;
     }
 
@@ -299,36 +300,54 @@ public:
     length--;
   }
 
+#include <unordered_map>
+
   void removeMultiples()
   {
     if (isEmpty())
       return;
-    // initializing a map
-    std::unordered_map<T *, int> countMap;
+
+    std::unordered_map<T, int> countMap;
 
     Node<T> *current = head;
     while (current != nullptr)
     {
-      countMap[current->value]++;
+      countMap[*(current->value)]++;
       current = current->next;
     }
 
     current = head;
+    Node<T> *prev = nullptr;
     while (current != nullptr)
     {
-      Node<T> *nextNode = current->next;
-
-      if (countMap[current->value] > 1)
+      if (countMap[*(current->value)] > 1)
       {
+        if (prev == nullptr)
+        {
+          head = current->next;
+        }
+        else
+        {
+          prev->next = current->next;
+        }
+        if (current->next != nullptr)
+        {
+          current->next->prev = prev;
+        }
+        Node<T> *temp = current;
+        current = current->next;
+        delete temp;
       }
-
-      current = nextNode;
+      else
+      {
+        prev = current;
+        current = current->next;
+      }
     }
   }
 
   int countMultiples(T value)
   {
-
     if (isEmpty())
       return 0;
 
@@ -338,7 +357,6 @@ public:
 
     while (current != nullptr)
     {
-      // dereference current node value.
       if (*(current->value) == value)
       {
         count++;
@@ -349,7 +367,93 @@ public:
     return count;
   }
 
-  // Helper function to limit non DRY implementation
+  void headTailSplit()
+  {
+    if (isEmpty())
+      return;
+
+    Node<T> *slow = head, *fast = head;
+    while (fast != nullptr && fast->next != nullptr)
+    {
+      slow = slow->next;
+      fast = fast->next->next;
+    }
+
+    DoubleLinkedList<T> listA, listB;
+
+    Node<T> *current = head;
+    while (current != slow)
+    {
+      listA.append(current->value);
+      Node<T> *temp = current;
+      current = current->next;
+      delete temp;
+    }
+
+    current = tail;
+    while (current != slow)
+    {
+      listB.append(current->value);
+      Node<T> *temp = current;
+      current = current->prev;
+      delete temp;
+    }
+
+    delete this; // Deleting the original list
+
+    listA.printList(); // Printing the list A
+    listB.printList(); // Printing the list B
+  }
+
+  void sortList()
+  {
+    if (isEmpty())
+      return;
+
+    bool swapped;
+    Node<T> *ptr1;
+    Node<T> *lptr = nullptr;
+
+    do
+    {
+      swapped = false;
+      ptr1 = head;
+
+      while (ptr1->next != lptr)
+      {
+        if (ptr1->value->value > ptr1->next->value->value)
+        {
+          std::swap(ptr1->value, ptr1->next->value);
+          swapped = true;
+        }
+        ptr1 = ptr1->next;
+      }
+      lptr = ptr1;
+
+    } while (swapped);
+
+    printList(); // Printing the sorted list.
+  }
+
+  void reverseList()
+  {
+    Node<T> *current = head, *temp = nullptr;
+
+    while (current != nullptr)
+    {
+      temp = current->prev;
+      current->prev = current->next;
+      current->next = temp;
+      current = current->prev;
+    }
+
+    if (temp != nullptr)
+      head = temp->prev;
+
+    printList(); // Printing the reversed list
+  }
+
+  // Helper function
   bool isEmpty()
   {
     return (head == nullptr);
@@ -360,14 +464,99 @@ public:
 
 int main()
 {
-  // creating data object
-  Data *d1 = new Data(10, "a");
+  int choice, value;
+  string name;
+  DoubleLinkedList<Data> *list = nullptr;
 
-  // Creating Linked List
-  DoubleLinkedList<Data> *ll1 = new DoubleLinkedList<Data>(d1);
+  do
+  {
+    cout << "Menu:\n";
+    cout << "1. Create new list\n";
+    cout << "2. Append data\n";
+    cout << "3. Prepend data\n";
+    cout << "4. Insert data at index\n";
+    cout << "5. Print list\n";
+    cout << "6. Delete from head\n";
+    cout << "7. Delete from tail\n";
+    cout << "8. Delete at index\n";
+    cout << "9. Sort list\n";
+    cout << "10. Reverse list\n";
+    cout << "11. Count multiples of a value\n";
+    cout << "12. Remove multiples\n";
+    cout << "13. Split list\n";
+    cout << "0. Exit\n";
+    cout << "Enter your choice: ";
+    cin >> choice;
 
-  // Calling operations on Linked List
-  ll1->printList();
+    switch (choice)
+    {
+    case 1:
+      if (list)
+      {
+        delete list;
+      }
+      cout << "Enter initial value and name (separated by space): ";
+      cin >> value >> name;
+      list = new DoubleLinkedList<Data>(new Data(value, name));
+      break;
+    case 2:
+      cout << "Enter value and name (separated by space): ";
+      cin >> value >> name;
+      list->append(new Data(value, name));
+      break;
+    case 3:
+      cout << "Enter value and name (separated by space): ";
+      cin >> value >> name;
+      list->prepend(new Data(value, name));
+      break;
+    case 4:
+      int index;
+      cout << "Enter index, value and name (separated by space): ";
+      cin >> index >> value >> name;
+      list->insert(index, new Data(value, name));
+      break;
+    case 5:
+      list->printList();
+      break;
+    case 6:
+      list->deleteAtHead();
+      break;
+    case 7:
+      list->deleteAtTail();
+      break;
+    case 8:
+      cout << "Enter index to delete: ";
+      cin >> index;
+      list->deleteAtIndex(index);
+      break;
+    case 9:
+      list->sortList();
+      break;
+    case 10:
+      list->reverseList();
+      break;
+    case 11:
+      cout << "Enter value to count multiples of: ";
+      cin >> value;
+      cout << "Multiples Count: " << list->countMultiples(Data(value, "")) << "\n";
+      break;
+    case 12:
+      list->removeMultiples();
+      break;
+    case 13:
+      list->headTailSplit();
+      break;
+    case 0:
+      if (list)
+      {
+        delete list;
+      }
+      cout << "Exiting...\n";
+      break;
+    default:
+      cout << "Invalid choice. Try again.\n";
+    }
+  } while (choice != 0);
 
   return 0;
 }
