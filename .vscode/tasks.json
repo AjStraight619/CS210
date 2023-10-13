@@ -2,6 +2,7 @@
     "tasks": [
         {
             "type": "cppbuild",
+<<<<<<< HEAD
             "label": "C/C++: g++.exe build active file",
             "command": "C:\\ProgramData\\chocolatey\\bin\\g++.exe",
             "args": [
@@ -10,6 +11,17 @@
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
+=======
+            "label": "C/C++: clang build active file",
+            "command": "/usr/bin/clang",
+            "args": [
+                "-fcolor-diagnostics",
+                "-fansi-escape-codes",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+>>>>>>> origin/main
             ],
             "options": {
                 "cwd": "${fileDirname}"
